@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>보험업무 AI START GUIDE</title>
+<style>
+:root{
+  --navy:#16233F; --navy-2:#223460; --gold:#B6862E; --gold-soft:#F4E8D2;
+  --bg:#F2F4F9; --card:#FFFFFF; --line:#E1E5EF; --text:#1C2333; --muted:#667085;
+  --field-bg:#F7F8FC; --radius:16px;
+  --why:#2E5AAC; --why-bg:#EAF1FC; --why-line:#C9DAF3;
+  --gloss:#7A4FB5; --gloss-bg:#F3ECFA; --gloss-line:#DFCCF0;
+  --rule:#A23B3B; --rule-bg:#FBEDED; --rule-line:#EFC7C7;
+  --ok:#2F7D5C;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif;
+  padding-bottom:96px;-webkit-font-smoothing:antialiased;}
+.mono{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+
+.top{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;
+  padding:22px 18px 16px;border-bottom-left-radius:22px;border-bottom-right-radius:22px;}
+.top-inner{max-width:760px;margin:0 auto}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);color:#F4E8D2;padding:5px 11px;border-radius:999px;
+  font-size:12px;font-weight:600;margin-bottom:10px;}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+h1.title{font-size:21px;line-height:1.4;margin:0 0 8px;font-weight:800}
+.lead{font-size:13.5px;line-height:1.6;color:#C9D2E6;margin:0}
+
+.roadmap{max-width:760px;margin:14px auto 0;padding:0 16px}
+.roadmap-title{font-size:11.5px;color:#9FAAC6;margin-bottom:8px;font-weight:700;letter-spacing:.02em}
+.roadmap-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
+.roadmap-strip::-webkit-scrollbar{display:none}
+.rchip{flex:0 0 auto;padding:7px 11px;border-radius:10px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#8E9BC0;white-space:nowrap}
+.rchip.now{background:var(--gold);border-color:var(--gold);color:#241a04}
+
+.progress-wrap{max-width:760px;margin:16px auto 0;padding:0 16px}
+.progress-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.progress-meta .stepnum{font-size:13px;font-weight:700;color:var(--navy)}
+.progress-meta .stepnum .mono{color:var(--gold)}
+.progress-meta .secname{font-size:12.5px;color:var(--muted);max-width:58%;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress-bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--navy));border-radius:999px;transition:width .25s ease}
+
+.chipnav{max-width:760px;margin:12px auto 0;padding:0 16px 4px;display:flex;gap:8px;overflow-x:auto;scroll-behavior:smooth}
+.chipnav::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;min-width:34px;height:32px;padding:0 9px;display:flex;align-items:center;justify-content:center;
+  border-radius:9px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+main{max-width:760px;margin:16px auto 0;padding:0 16px}
+.step-section{display:none}
+.step-section.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 18px 22px;box-shadow:0 2px 14px rgba(22,35,63,.05);}
+.cardHead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.stepTag{font-size:11.5px;font-weight:700;color:#fff;background:var(--navy);padding:4px 8px;border-radius:7px}
+h2.secTitle{font-size:17px;margin:0;font-weight:800}
+.secDesc{font-size:12.5px;color:var(--muted);margin:2px 0 14px;line-height:1.55}
+
+.field{padding:16px 0;border-top:1px solid var(--line)}
+.field:first-of-type{border-top:0;padding-top:2px}
+.qtitle{font-weight:700;font-size:14.5px;margin-bottom:4px}
+.qtitle .multi{font-weight:400;color:var(--muted);font-size:12.5px}
+input[type="text"],textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;
+  background:#fff;font:inherit;font-size:15.5px;color:var(--text)}
+textarea{min-height:70px;resize:vertical;line-height:1.5}
+input[type="text"]:focus,textarea:focus{outline:none;border-color:var(--navy)}
+
+.opts{display:grid;grid-template-columns:1fr;gap:9px}
+@media(min-width:600px){.opts{grid-template-columns:1fr 1fr}}
+.opts.opts2{grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;gap:11px;min-height:50px;padding:12px 14px;background:var(--field-bg);
+  border:1.6px solid var(--line);border-radius:12px;cursor:pointer;font-size:14.5px;line-height:1.4}
+.opt input{width:19px;height:19px;flex:0 0 auto;accent-color:var(--navy)}
+.opt.sel{background:#EEF1FA;border-color:var(--navy)}
+.opt span{flex:1}
+
+/* 왜/용어 설명 박스 */
+.whybox,.glossbox{border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.6;margin:8px 0 4px}
+.whybox{background:var(--why-bg);border:1px solid var(--why-line);color:#1d3a70}
+.whybox b{color:var(--why)}
+.glossbox{background:var(--gloss-bg);border:1px solid var(--gloss-line);color:#3d2a5c}
+.glossbox b{color:var(--gloss)}
+
+/* RULE 박스 */
+.rulebox{background:var(--rule-bg);border:1.5px solid var(--rule-line);border-radius:14px;padding:16px;margin:10px 0}
+.rulelabel{display:inline-block;background:var(--rule);color:#fff;font-size:11px;font-weight:800;
+  padding:3px 9px;border-radius:7px;letter-spacing:.04em;margin-bottom:8px}
+.rulebox h3{margin:6px 0 8px;font-size:15px;color:#6b2323}
+.rulebox ol,.rulebox ul{margin:6px 0 0;padding-left:20px;font-size:13.5px;line-height:1.65;color:#4a2323}
+.rulebox p{font-size:13.5px;line-height:1.65;color:#4a2323;margin:6px 0}
+
+/* 비교 카드 */
+.comparegrid{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0}
+@media(min-width:640px){.comparegrid{grid-template-columns:1fr 1fr}}
+.comparegrid.of3{grid-template-columns:1fr}
+@media(min-width:760px){.comparegrid.of3{grid-template-columns:1fr 1fr 1fr}}
+.ccard{border:1.6px solid var(--line);border-radius:14px;padding:15px;background:#fff}
+.ccard.reco{border-color:var(--gold);background:#FFFDF6}
+.ccard .ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.ccard h4{margin:0;font-size:15.5px;font-weight:800}
+.recobadge{background:var(--gold);color:#241a04;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:7px}
+.price{font-size:19px;font-weight:800;color:var(--navy);margin:4px 0 2px}
+.pricedate{font-size:11px;color:var(--muted);margin-bottom:10px}
+.ccard .row{display:flex;gap:6px;font-size:12.5px;line-height:1.55;margin:5px 0}
+.ccard .row .k{flex:0 0 44px;color:var(--muted);font-weight:700}
+.ccard .row .v{flex:1}
+.tag-good{color:var(--ok)}
+.tag-bad{color:var(--rule)}
+
+.stepnav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:50}
+.stepnav-inner{max-width:760px;margin:0 auto;display:flex;gap:10px;width:100%}
+.navbtn{flex:1;border:0;border-radius:13px;padding:15px 14px;font-size:15.5px;font-weight:800;cursor:pointer}
+.navbtn.prev{background:#EDEFF5;color:var(--navy);flex:0 0 34%}
+.navbtn.next{background:var(--navy);color:#fff}
+.navbtn:disabled{opacity:.4}
+
+.resultBox{white-space:pre-wrap;background:#101828;color:#F2F4F9;border-radius:14px;padding:16px;margin-top:6px;
+  line-height:1.6;font-size:12.5px;max-height:54vh;overflow:auto;
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{border:0;border-radius:12px;padding:13px 16px;font-weight:700;font-size:14.5px;cursor:pointer}
+.btn.secondary{background:#EDEFF5;color:var(--navy)}
+.btn.ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
+
+/* 랜딩(완성되면 이런 하루가 됩니다) */
+.landing{max-width:760px;margin:16px auto 40px;padding:0 16px}
+.dayblock{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.dayblock .dtime{display:inline-block;background:var(--navy);color:#fff;font-size:11.5px;font-weight:800;
+  padding:4px 10px;border-radius:8px;margin-bottom:10px}
+.dayblock ul{margin:0;padding-left:19px;font-size:13.5px;line-height:1.75;color:var(--text)}
+.dayblock .flow{font-size:13px;line-height:2;color:var(--text)}
+.bigquote{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border-radius:16px;
+  padding:22px 20px;margin:18px 0;font-size:14.5px;line-height:1.85;font-weight:600;text-align:center}
+.bigquote .gold{color:var(--gold-soft);font-weight:800}
+.startbtn{display:block;width:100%;background:var(--navy);color:#fff;border:0;border-radius:14px;
+  padding:18px 16px;font-size:16.5px;font-weight:800;cursor:pointer;margin-top:6px}
+.futurebox{background:var(--field-bg);border:1.5px dashed var(--line);border-radius:14px;padding:15px;margin:14px 0;font-size:13px;line-height:1.8}
+.futurebox .lbl{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.03em;margin-bottom:4px}
+.aiExample{background:#101828;color:#EAF0FF;border-radius:12px;padding:14px 15px;margin:8px 0;
+  font-size:12.5px;line-height:1.75;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;white-space:pre-wrap}
+.aiExample .aitag{display:inline-block;background:var(--gold);color:#241a04;font-size:10.5px;font-weight:800;
+  padding:2px 8px;border-radius:6px;margin-bottom:8px;font-family:-apple-system,sans-serif}
+.corequote{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border-radius:14px;
+  padding:16px 18px;margin:12px 0 18px;font-size:13.5px;line-height:1.75}
+.corequote b{color:var(--gold-soft)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-inner">
+    <span class="badge"><span class="dot"></span>보험업무 AI 세팅 가이드</span>
+    <h1 class="title">완성되면 이런 하루가 됩니다</h1>
+    <p class="lead">STEP 1을 시작하기 전에, 이 시스템이 다 만들어지면 하루가 실제로 어떻게 달라지는지 먼저 보여드릴게요. 아래는 지금 답해주신 내용을 바탕으로 그려본 미래 모습입니다.</p>
+  </div>
+</div>
+
+<div class="landing" id="landingView">
+
+  <div class="corequote">
+    새로운 데이터를 또 입력하는 시스템을 만드는 것이 아닙니다.<br><br>
+    이미 보험프로그램에 입력한 정보, 이미 받은 고객자료, 이미 한 상담, 이미 녹음한 내용을<br>
+    <b>다시 찾고 · 다시 적고 · 다시 정리하는 일을 줄이는 것</b>이 목표입니다.
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">1. 아침에 출근했을 때</span>
+    <div class="futurebox">
+      <div class="lbl">지금은</div>
+      오늘 누구한테 연락해야 했지? 카톡에 뭐가 왔더라? 서류 안 준 고객 누구였지? 오늘 상담 누구지? — 보험프로그램, 카톡, 메모, 수첩을 각각 확인
+      <div class="lbl" style="margin-top:12px">목표</div>
+      &ldquo;오늘 먼저 챙길 고객 정리해줘.&rdquo;
+    </div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>오늘 상담
+· 김○○ · 14:00
+· 기존보험 자료 있음 / 지난 상담 병력 확인사항 1건
+· 진단서 미수신 / 오늘 질문 4개
+
+먼저 연락
+· 박○○ · 갱신 전 연락
+· 이○○ · 미제출서류
+· 최○○ · 지난 상담 후 답변 필요
+
+확인할 보험
+· 김○○ · 2009년 ○○보험 구약관 확인</div>
+    <div class="glossbox">왜 가능해지나요? 보험프로그램의 고객·계약자료, 저장소의 원본자료, 상담기록을 각각 다시 입력하는 대신 활용 가능한 파일 형태로 꺼내 정리하면, AI가 필요한 업무를 찾고 비교하는 데 활용할 수 있습니다.</div>
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">2. 고객 여러 명을 한꺼번에 관리할 때</span>
+    <div class="glossbox">보험프로그램에서 고객목록이나 계약현황을 Excel/CSV로 받을 수 있다면 — &ldquo;이번 달 관리할 고객 찾아줘.&rdquo;</div>
+    <div class="aiExample"><span class="aitag">AI가 볼 수 있는 후보</span>갱신 예정 · 김○○ · 박○○
+최근 상담 후 미처리 · 이○○
+서류 미제출 · 최○○
+오래된 계약 보유 · 정○○
+재상담 검토 · 윤○○</div>
+    <div class="glossbox">형님이 고객 100명을 머릿속에 넣고 있을 필요가 줄어드는 거예요. <b>보험프로그램 = 원본 고객·계약 데이터, AI = 그 데이터에서 지금 볼 사람을 찾는 보조자.</b></div>
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">3. 상담 10분 전 — 보장분석표 PDF 재활용</span>
+    <div class="futurebox">보장분석 PDF + 고객 증권 + 계약정보를 GPT에 넣고 — &ldquo;오늘 상담 전에 확인할 것만 정리해줘.&rdquo;</div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>이미 충분한 보장 → ○○
+부족 가능성 있어 확인할 것 → ○○
+갱신형이라 확인할 것 → ○○
+오래된 보험이라 함부로 정리하면 안 되는 것 → ○○
+구약관 확인 필요 → ○○보험 / 가입일 ○○
+
+고객에게 물어볼 것
+1. ○○  2. ○○  3. ○○</div>
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">4. 오래된 보험 — 구약관 확인이 가장 오래 걸린다고 하셨죠</span>
+    <div class="futurebox">보험프로그램(보험사/상품명/가입일/특약 확인) → 보험사(가입 당시 공식 약관 다운로드) → 지정 저장소(고객폴더에 원본 보관) → GPT(증권+계약정보+당시 약관 대조) — &ldquo;실제 가입특약만 기준으로 지급조건 찾아줘.&rdquo;</div>
+    <div class="glossbox">형님이 얻는 것 — 어느 약관인지 찾는 시간 감소 · 특약명 다시 찾는 시간 감소 · 약관 수백 페이지에서 해당 조항 찾는 시간 감소 · 확인할 부분이 좁혀짐. 가장 시간이 오래 걸린다고 답하신 &ldquo;오래된 약관 찾기&rdquo;가 바로 여기서 개선됩니다.</div>
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">5. 상담 후 — 녹음이 보험프로그램으로 돌아갑니다</span>
+    <div class="flow">상담 → Galaxy 녹음 → 전사 → 전사파일 저장 → GPT 분석(고객 니즈·병력·치료력·예산·기존보험 불만·미확인사항·다음 질문) → &ldquo;보험프로그램 고객메모에 넣을 형태로 정리해줘.&rdquo;</div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>상담일: 2026.08.30
+상담요약: ○○
+병력 확인: ○○
+추가서류: ○○
+다음 연락: ○○
+후속업무: ○○</div>
+    <div class="glossbox">형님이 전사문을 읽고 다시 CRM용으로 재작성하는 일을 줄이는 게 목표예요.</div>
+  </div>
+
+  <div class="dayblock">
+    <span class="dtime">6. 월말 — 유지관리 · 수입 현황</span>
+    <div class="futurebox">보험프로그램에서 계약일/계약상태/유지기간/보험료/수수료 자료를 받을 수 있다면 — &ldquo;이번 달 유지관리가 중요한 계약 보여줘.&rdquo;</div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>주의
+· ○○계약 · 유지 중요시점
+· △△계약 · 실효 가능성 확인
+· □□고객 · 연락 필요
+
+이번 달
+· 신규계약 ○건 · 정상유지 ○건 · 관리필요 ○건
+· 예상 수입 ○○원 (제공된 수수료 자료 기준)</div>
+    <div class="glossbox">여기까지 가면 앞서 선택하신 고객별 유지현황 / 유지 중요기간 / 위험고객 / 갱신알림 / 다음상담 / 우선관리 고객이 실제 업무로 연결됩니다.</div>
+  </div>
+
+  <div class="bigquote">
+    목표는 AI를 <span class="gold">많이 쓰는 것</span>이 아닙니다.<br><br>
+    한 번 확인한 정보를 다시 찾고,<br>
+    한 번 들은 내용을 다시 듣고,<br>
+    한 번 기록한 내용을 다시 적고,<br>
+    해야 할 일을 기억에만 의존하는 것을<br>
+    <span class="gold">줄이는 것</span>입니다.
+  </div>
+
+  <button type="button" class="startbtn" onclick="startGuide()">STEP 1부터 시작하기</button>
+</div>
+
+<div id="stepperView" style="display:none">
+<div class="top" style="border-radius:0;padding-top:14px">
+  <div class="top-inner">
+    <span class="badge"><span class="dot"></span>보험업무 AI 세팅 가이드</span>
+    <h1 class="title" style="font-size:18px">보험업무 AI START GUIDE</h1>
+    <p class="lead">지금 쓰는 환경부터 확인하고, 필요한 도구만 하나씩 직접 선택해서 확정합니다.</p>
+    <div class="roadmap">
+      <div class="roadmap-title">전체 로드맵 (지금은 STEP 1)</div>
+      <div class="roadmap-strip" id="roadmapStrip"></div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <div class="stepnum">STEP 1 · <span class="mono" id="stepNumLabel">01</span> / <span class="mono" id="totalStepsLabel">14</span></div>
+    <div class="secname" id="secNameLabel"></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:6.6%"></div></div>
+</div>
+
+<nav class="chipnav" id="chipnav"></nav>
+
+<form id="f" onsubmit="return false">
+<main id="stepsContainer"></main>
+</form>
+
+<div class="stepnav">
+  <div class="stepnav-inner">
+    <button type="button" class="navbtn prev" id="prevBtn" onclick="goStep(currentStep-1)">이전</button>
+    <button type="button" class="navbtn next" id="nextBtn" onclick="goStep(currentStep+1)">다음</button>
+  </div>
+</div>
+</div><!-- /stepperView -->
+
+<script>
+function startGuide(){
+  document.getElementById('landingView').style.display = 'none';
+  document.getElementById('stepperView').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+  goStep(1);
+}
+const TODAY = '2026.08.30';
+const ROADMAP = [
+  ['STEP 1','업무환경·도구 확정'],['STEP 2','신규 고객자료 RULE'],['STEP 3','기존 자료 통합'],
+  ['STEP 4','ChatGPT 프로젝트 세팅'],['STEP 5','가족보험 MASTER'],['STEP 6','고객보험 검증 프로세스'],
+  ['STEP 7','구약관·PDF 시스템'],['STEP 8','상담 AI'],['STEP 9','상담후·고객유지관리'],['STEP 10','자동화·경영관리']
+];
+document.getElementById('roadmapStrip').innerHTML = ROADMAP.map((r,i)=>
+  `<div class="rchip${i===0?' now':''}">${r[0]} ${r[1]}</div>`).join('');
+
+/* ---------- 섹션 HTML (각 섹션은 직접 작성) ---------- */
+const SECTIONS = [];
+
+SECTIONS.push({id:1, title:'Galaxy 기본기 체크', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 잘하고 못하고를 평가하려는 게 아니라, 어디서부터 짧게 도와드리면 되는지 확인하기 위한 체크예요. &ldquo;잘 모르겠어요&rdquo;를 고르셔도 전혀 문제없습니다 — 오히려 그게 이 가이드가 필요한 이유예요.</div>
+  ${[
+    ['gx1','카카오톡에서 받은 사진 여러 장을 한 번에 선택하기','사진을 길게 누르면 선택 모드가 됩니다. 이어서 다른 사진들을 톡톡 눌러 추가로 선택한 뒤, 하단의 공유 아이콘을 누르면 여러 장을 한 번에 저장하거나 전달할 수 있어요.'],
+    ['gx2','카카오톡에서 받은 PDF를 다른 앱으로 공유하기','받은 PDF를 누르면 미리보기가 열립니다. 화면 상단 또는 하단의 공유 아이콘을 누르면 &ldquo;다른 앱으로 보내기&rdquo; 목록이 뜨고, 여기서 원하는 저장소나 앱을 고르면 됩니다.'],
+    ['gx3','공유 메뉴에서 지정한 저장소 앱으로 바로 저장하기','공유 화면에 원하는 앱(OneDrive, Google Drive 등)이 안 보이면, 공유 목록 맨 끝의 &ldquo;더 보기&rdquo;를 눌러 앱을 추가로 표시할 수 있어요.'],
+    ['gx4','다운로드한 PDF를 나중에 다시 찾기','내 파일 앱 → Download 폴더에 대부분 저장됩니다. 파일이 안 보이면 내 파일 앱 상단 검색창에 파일명 일부만 입력해도 찾을 수 있어요.'],
+    ['gx5','파일 이름 바꾸기','내 파일 앱에서 파일을 길게 눌러 선택한 뒤, 하단 메뉴의 &ldquo;이름 바꾸기&rdquo;를 누르면 바로 변경할 수 있습니다.'],
+    ['gx6','갤럭시에서 Windows PC로 파일 보내기','Galaxy와 Windows 모두 같은 삼성 계정으로 로그인돼 있다면 &ldquo;퀵셰어&rdquo;나 &ldquo;내 디바이스로 보내기&rdquo; 기능으로 무선 전송이 가능합니다. USB 케이블로 직접 연결해서 옮기는 방법도 있어요.'],
+    ['gx7','통화녹음 파일 찾기','전화 앱 → 오른쪽 상단 더보기 → 통화 녹음 메뉴에서 목록을 볼 수 있고, 실제 파일은 내 파일 앱의 Recordings 폴더 안 Call 폴더에 저장돼요.'],
+    ['gx8','녹음파일 공유하기','통화 녹음 목록에서 파일을 길게 눌러 선택한 뒤 공유 아이콘을 누르면 카카오톡, 이메일, 클라우드 등으로 바로 보낼 수 있습니다.'],
+  ].map(([key,label,guide])=>`
+    <div class="field">
+      <div class="qtitle">${label}</div>
+      <div class="opts opts2">
+        <label class="opt"><input type="radio" name="${key}" value="할 수 있어요"><span>할 수 있어요</span></label>
+        <label class="opt"><input type="radio" name="${key}" value="잘 모르겠어요" data-guide-toggle="${key}"><span>잘 모르겠어요</span></label>
+      </div>
+      <div class="glossbox" id="guide_${key}" style="display:none"><b>방법</b> ${guide}</div>
+    </div>
+  `).join('')}
+`});
+
+SECTIONS.push({id:2, title:'보험 프로그램 확인', html:`
+  <div class="whybox"><b>왜 이 질문을 하나요?</b> 새로운 프로그램으로 바꾸려는 게 아닙니다. 형님이 이미 보험프로그램에 입력해둔 정보를 다시 활용할 수 있는지 확인하기 위해서예요.</div>
+
+  <div class="field">
+    <div class="qtitle">이 프로그램에서 파일을 받을 수 있나요?</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="prog_filetype" value="PDF 받을 수 있어요"><span>PDF 받을 수 있어요</span></label>
+      <label class="opt"><input type="radio" name="prog_filetype" value="Excel/CSV 받을 수 있어요"><span>Excel/CSV 받을 수 있어요</span></label>
+      <label class="opt"><input type="radio" name="prog_filetype" value="둘 다 가능해요"><span>둘 다 가능해요</span></label>
+      <label class="opt"><input type="radio" name="prog_filetype" value="잘 모르겠어요"><span>잘 모르겠어요 (지금은 PASS)</span></label>
+    </div>
+    <div class="glossbox" style="margin-top:10px">
+      <b>PDF</b> → 상담자료·보장분석·설계안을 상담 준비자료로 활용 가능<br>
+      <b>Excel/CSV</b> → 여러 고객·계약·갱신·유지현황을 한 번에 분석 가능<br>
+      <b>둘 다</b> → 활용범위가 가장 넓음
+    </div>
+  </div>
+
+  <div class="dayblock" style="margin:4px 0 14px">
+    <span class="dtime">이게 실제로 어떻게 쓰이나요?</span>
+    <div class="glossbox">예를 들어 고객 계약목록 Excel을 받을 수 있다면 — 지금은 화면을 보면서 &ldquo;김○○ 보험 몇 개지? 갱신형이 뭐였지? 보험료 총 얼마지?&rdquo;를 하나씩 확인하지만, 파일을 GPT에 넣고 &ldquo;김○○ 계약 전체 정리해줘&rdquo;라고 하면 아래처럼 정리됩니다.</div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>김○○ 보유계약 12건
+· 월 보험료 합계: ○○원
+· 갱신형: 4건 / 비갱신형: 8건
+· 실손: ○○보험
+· 오래된 계약: 3건
+· 약관 추가확인 필요: 2건</div>
+    <div class="glossbox">보험프로그램을 대체하는 게 아니라, <b>보험프로그램에 이미 들어있는 데이터를 다시 활용하는 것</b>이에요.</div>
+  </div>
+
+  <div class="dayblock" style="margin:0 0 14px">
+    <span class="dtime">신규 설계안도 그냥 보관만 하지 않게</span>
+    <div class="glossbox">가입설계서 PDF가 있으면 현재보험과 새 설계안을 대조해서 &ldquo;기존 보장 / 새로 추가되는 보장 / 줄어드는 보장 / 보험료 변화 / 갱신 여부 변화 / 고객에게 설명할 핵심 차이&rdquo;를 정리할 수 있어요. &ldquo;이 설계안을 고객에게 어떻게 쉽게 설명하지&rdquo;를 매번 처음부터 고민하는 시간을 줄이는 거예요. 단, 최종 보험 판단과 설명은 형님이 원문을 확인하고 하는 구조는 그대로입니다.</div>
+  </div>
+
+  <div class="field">
+    <div class="qtitle">기존 통합조회 · 보장분석 프로그램명</div>
+    <input type="text" name="prog_integrated" placeholder="예: 보맵, 인바디, 회사 자체 시스템 등">
+  </div>
+  <div class="field">
+    <div class="qtitle">이 프로그램에서 가능한 기능 <span class="multi">(복수선택)</span></div>
+    <div class="opts">${['보험가입내역','보장금액','보험료','갱신','중복/부족','청구','고객관리','상담이력','후속일정','유지관리','기타','잘 모르겠음'].map(o=>`<label class="opt"><input type="checkbox" name="prog_integrated_feat" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">신규보험 설계 프로그램명</div>
+    <input type="text" name="prog_design" placeholder="상품 설계·비교·청약용 프로그램">
+  </div>
+  <div class="field">
+    <div class="qtitle">이 프로그램에서 가능한 기능 <span class="multi">(복수선택)</span></div>
+    <div class="opts">${['상품 검색','담보 선택','보험료 계산','여러 보험사 비교','가입제안서','인수 가능 여부','전자청약','기타','잘 모르겠음'].map(o=>`<label class="opt"><input type="checkbox" name="prog_design_feat" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">파일 입출력 <span class="multi">(복수선택)</span></div>
+    <div class="opts">${['PDF 다운로드','Excel 다운로드','CSV 다운로드','고객목록 다운로드','보장분석표 다운로드','가입제안서 다운로드','자료 업로드 기능','잘 모르겠음'].map(o=>`<label class="opt"><input type="checkbox" name="prog_io" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+`});
+
+SECTIONS.push({id:3, title:'Google vs Microsoft 업무 기반', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 저장소 하나만 비교하는 게 아니라, 메일·저장소·문서·캘린더가 하나로 묶여서 Galaxy·Windows와 얼마나 매끄럽게 연결되는지를 비교하는 거예요. 고객 보험자료를 업무용으로 장기간 관리한다는 점을 감안해서 봐주세요. 가격은 ${TODAY} 공식 페이지 기준입니다.</div>
+
+  <div class="field"><div class="qtitle">Google Workspace</div></div>
+  <div class="comparegrid of3">
+    <div class="ccard">
+      <div class="ctop"><h4>Business Starter</h4></div>
+      <div class="price">$8.40/월</div>
+      <div class="pricedate">연간약정 $7/월 · 기준일 ${TODAY} · workspace.google.com/pricing</div>
+      <div class="row"><span class="k">용량</span><span class="v">30GB (사용자당 풀드 스토리지)</span></div>
+      <div class="row"><span class="k">Gmail</span><span class="v">비즈니스 이메일 + Gemini(제한적)</span></div>
+      <div class="row"><span class="k">Drive</span><span class="v">포함</span></div>
+      <div class="row"><span class="k">Calendar</span><span class="v">포함</span></div>
+      <div class="row"><span class="k">기타</span><span class="v">Meet(100명), Docs/Sheets/Slides</span></div>
+    </div>
+    <div class="ccard reco">
+      <div class="ctop"><h4>Business Standard</h4><span class="recobadge">추천 후보</span></div>
+      <div class="price">$16.80/월</div>
+      <div class="pricedate">연간약정 $14/월 · 기준일 ${TODAY}</div>
+      <div class="row"><span class="k">용량</span><span class="v">2TB (사용자당)</span></div>
+      <div class="row"><span class="k">Gmail</span><span class="v">비즈니스 이메일 + Gemini 전체 앱에서 사용</span></div>
+      <div class="row"><span class="k">Drive</span><span class="v">포함, eSignature 가능</span></div>
+      <div class="row"><span class="k">Calendar</span><span class="v">포함 + 예약페이지</span></div>
+      <div class="row"><span class="k">기타</span><span class="v">Meet(150명, 녹화), Gemini가 Docs/Sheets/Drive/Meet 전체에서 동작 — 고객자료 장기 관리에 필요한 저장공간과 AI 기능이 균형있게 포함</span></div>
+    </div>
+    <div class="ccard">
+      <div class="ctop"><h4>Business Plus</h4></div>
+      <div class="price">$26.40/월</div>
+      <div class="pricedate">연간약정 $22/월 · 기준일 ${TODAY}</div>
+      <div class="row"><span class="k">용량</span><span class="v">5TB</span></div>
+      <div class="row"><span class="k">기타</span><span class="v">Meet(500명, 출석기록), 고급 보안 — 1인 사용에는 과할 수 있음</span></div>
+    </div>
+  </div>
+
+  <div class="field"><div class="qtitle">Microsoft 365</div></div>
+  <div class="comparegrid of3">
+    <div class="ccard">
+      <div class="ctop"><h4>Personal</h4></div>
+      <div class="price">₩125,000/년</div>
+      <div class="pricedate">약 10,400원/월 · 기준일 ${TODAY} · microsoft.com 한국 스토어</div>
+      <div class="row"><span class="k">용량</span><span class="v">OneDrive 1TB</span></div>
+      <div class="row"><span class="k">데스크톱</span><span class="v tag-good">Word/Excel/PowerPoint/Outlook 데스크톱 전체 포함</span></div>
+      <div class="row"><span class="k">업무메일</span><span class="v tag-bad">없음 (개인 이메일 그대로 사용)</span></div>
+      <div class="row"><span class="k">차이</span><span class="v">개인용 — 회사 도메인 이메일, 관리자 콘솔, 확장은 안 됨</span></div>
+    </div>
+    <div class="ccard">
+      <div class="ctop"><h4>Business Basic</h4></div>
+      <div class="price">₩9,500/월</div>
+      <div class="pricedate">연간약정 · 기준일 ${TODAY}(2026.07.01 개편 가격) · Teams 제외 시 ₩7,300</div>
+      <div class="row"><span class="k">용량</span><span class="v">OneDrive 1TB</span></div>
+      <div class="row"><span class="k">데스크톱</span><span class="v tag-bad">Word/Excel/PowerPoint 웹·모바일 버전만, 데스크톱 앱 없음</span></div>
+      <div class="row"><span class="k">업무메일</span><span class="v tag-good">있음 (you@yourbusiness.com)</span></div>
+      <div class="row"><span class="k">차이</span><span class="v">업무용이지만 데스크톱 오피스가 없어 PC 작업 위주면 불편할 수 있음</span></div>
+    </div>
+    <div class="ccard reco">
+      <div class="ctop"><h4>Business Standard</h4><span class="recobadge">추천 후보</span></div>
+      <div class="price">₩31,800/월</div>
+      <div class="pricedate">연간약정, Copilot AI 포함 · 기준일 ${TODAY} · Teams 제외 ₩27,400</div>
+      <div class="row"><span class="k">용량</span><span class="v">OneDrive 1TB</span></div>
+      <div class="row"><span class="k">데스크톱</span><span class="v tag-good">Word/Excel/PowerPoint/Outlook 데스크톱 전체 포함</span></div>
+      <div class="row"><span class="k">업무메일</span><span class="v tag-good">있음 + Copilot AI 채팅 포함</span></div>
+      <div class="row"><span class="k">차이</span><span class="v">업무용 메일과 데스크톱 오피스를 함께 쓰는 가장 균형잡힌 구성</span></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="qtitle">보험업무 적합성 참고</div>
+    <div class="glossbox">고객 보험자료를 <b>업무용으로 장기간</b> 관리하실 거라, 개인용 이메일과 섞어 쓰는 Personal/Google 무료 계정보다는 업무 메일이 분리되는 Business급 플랜이 자료 관리 측면에서 더 안전합니다. Windows 데스크탑 비중이 절반이고 보험사·GA 서식이 대부분 Word/Excel 기반이라는 점까지 고려하면 <b>Microsoft 365 Business Standard</b>가 실무 호환성과 저장공간, 업무메일을 모두 갖춘 균형점입니다. 다만 이건 참고일 뿐, 최종 선택은 직접 하시면 됩니다.</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">최종 선택</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="ecosystem" value="Google 기반"><span>Google 기반</span></label>
+      <label class="opt"><input type="radio" name="ecosystem" value="Microsoft 기반"><span>Microsoft 기반</span></label>
+      <label class="opt"><input type="radio" name="ecosystem" value="아직 결정하지 않음"><span>아직 결정하지 않음</span></label>
+    </div>
+  </div>
+`});
+
+SECTIONS.push({id:4, title:'기준 저장소 확정', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 카카오톡, 메일, 보험사 시스템, 휴대폰, PC 등에 고객자료가 흩어지지 않도록 &ldquo;여기가 최종 원본 보관 장소&rdquo;라는 기준 하나를 만들기 위해서예요.</div>
+  <div class="field">
+    <div class="qtitle">기준 저장소 선택</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="storage_base" value="OneDrive"><span>OneDrive</span></label>
+      <label class="opt"><input type="radio" name="storage_base" value="Google Drive"><span>Google Drive</span></label>
+      <label class="opt"><input type="radio" name="storage_base" value="기타"><span>기타</span></label>
+      <label class="opt"><input type="radio" name="storage_base" value="아직 결정하지 않음"><span>아직 결정하지 않음</span></label>
+    </div>
+    <div class="glossbox" style="margin-top:12px">앞에서 Microsoft를 선택하셨다면 OneDrive, Google을 선택하셨다면 Google Drive가 자연스럽게 이어집니다. 강제는 아니에요.</div>
+  </div>
+`});
+
+SECTIONS.push({id:5, title:'PDF 프로그램', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 하루에도 여러 번 PDF를 다루시는데, 지금 PDF 편집 숙련도가 낮다고 답하셨어요(1/5). 어떤 기능이 실제로 필요한지 먼저 체크하고, 거기 맞는 프로그램을 선택하기 위한 단계입니다.</div>
+  <div class="field">
+    <div class="qtitle">필요한 기능 체크 <span class="multi">(복수선택)</span></div>
+    <div class="opts">${['PDF 검색','여러 PDF 합치기','필요한 페이지만 저장','Word/Excel 변환','전자서명','OCR (글자인식)','개인정보 마스킹/교정','문서 비교'].map(o=>`<label class="opt"><input type="checkbox" name="pdf_need" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+  <div class="glossbox"><b>OCR(글자인식)이 뭐예요?</b> 종이를 스캔해서 사진처럼 되어버린 PDF의 글자를, 컴퓨터가 검색하고 복사할 수 있는 &ldquo;진짜 글자&rdquo;로 바꿔주는 기능이에요. 예를 들어 오래된 약관 PDF에서 &ldquo;암진단비&rdquo;를 검색했는데 안 뜬다면, 그 PDF가 스캔 이미지라서 그런 경우가 많습니다 — 이럴 때 OCR을 쓰면 검색이 됩니다.</div>
+  <div class="comparegrid of3" style="margin-top:14px">
+    <div class="ccard">
+      <div class="ctop"><h4>Acrobat Reader</h4></div>
+      <div class="price">무료</div>
+      <div class="pricedate">기준일 ${TODAY}</div>
+      <div class="row"><span class="k">기능</span><span class="v">열람, 댓글, 간단한 채우기/서명</span></div>
+      <div class="row"><span class="k">장점</span><span class="v tag-good">비용 없음, 대부분 기기에 이미 있음</span></div>
+      <div class="row"><span class="k">단점</span><span class="v tag-bad">편집·OCR·마스킹 불가</span></div>
+    </div>
+    <div class="ccard">
+      <div class="ctop"><h4>Acrobat Standard</h4></div>
+      <div class="price">₩17,600/월</div>
+      <div class="pricedate">기준일 ${TODAY} · adobe.com/kr (연간 약정, 부가세 포함)</div>
+      <div class="row"><span class="k">기능</span><span class="v">편집, 합치기/분할, Word·Excel 변환, 전자서명</span></div>
+      <div class="row"><span class="k">단점</span><span class="v tag-bad">OCR, 개인정보 마스킹, 문서 비교는 포함 안 됨</span></div>
+    </div>
+    <div class="ccard reco">
+      <div class="ctop"><h4>Acrobat Pro</h4><span class="recobadge">추천 후보</span></div>
+      <div class="price">₩26,400/월</div>
+      <div class="pricedate">기준일 ${TODAY} · adobe.com/kr (연간 약정, 월 결제 시 ₩39,600)</div>
+      <div class="row"><span class="k">기능</span><span class="v">Standard 전체 + OCR, 개인정보 마스킹/교정, 문서 버전 비교</span></div>
+      <div class="row"><span class="k">장점</span><span class="v tag-good">구약관 검색(OCR)과 고객 개인정보 마스킹이 모두 필요하신 경우와 정확히 일치</span></div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="qtitle">선택</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="pdf_choice" value="Acrobat Reader만 사용"><span>Acrobat Reader만 사용</span></label>
+      <label class="opt"><input type="radio" name="pdf_choice" value="Acrobat Standard"><span>Acrobat Standard</span></label>
+      <label class="opt"><input type="radio" name="pdf_choice" value="Acrobat Pro"><span>Acrobat Pro</span></label>
+      <label class="opt"><input type="radio" name="pdf_choice" value="아직 결정하지 않음"><span>아직 결정하지 않음</span></label>
+    </div>
+  </div>
+`});
+
+SECTIONS.push({id:6, title:'ChatGPT 요금제', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 앞으로 가족보험 10~30건, 증권·계약정보·약관 여러 개 비교, 상담 질문 생성, 녹취 분석까지 쓰실 계획이라, 지금 사용 목적에 요금제가 맞는지 미리 확인하는 단계입니다.</div>
+  <div class="comparegrid of3">
+    <div class="ccard">
+      <div class="ctop"><h4>Free</h4></div>
+      <div class="price">$0</div>
+      <div class="row"><span class="k">기능</span><span class="v">기본 대화, 파일 업로드 일부 제한</span></div>
+      <div class="row"><span class="k">단점</span><span class="v tag-bad">사용량 제한이 잦고, 프로젝트·메모리 등 기능이 제한적</span></div>
+    </div>
+    <div class="ccard reco">
+      <div class="ctop"><h4>Plus</h4><span class="recobadge">추천 후보</span></div>
+      <div class="price">$20/월 <span style="font-size:12px;color:var(--muted);font-weight:600">(한국 약 ₩29,000)</span></div>
+      <div class="pricedate">기준일 ${TODAY} · openai.com/chatgpt/pricing</div>
+      <div class="row"><span class="k">기능</span><span class="v">파일 업로드, 프로젝트, 메모리, 웹검색, 여러 파일 비교 — 지금 써보신 기능과 대부분 일치</span></div>
+    </div>
+    <div class="ccard">
+      <div class="ctop"><h4>Pro</h4></div>
+      <div class="price">$200/월</div>
+      <div class="pricedate">기준일 ${TODAY} · openai.com/chatgpt/pricing</div>
+      <div class="row"><span class="k">적합 시점</span><span class="v">사용량이 매우 많아진 뒤 검토해도 늦지 않음 — 지금 단계에서는 과합니다</span></div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="qtitle">선택</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="gpt_choice" value="Free"><span>Free</span></label>
+      <label class="opt"><input type="radio" name="gpt_choice" value="Plus"><span>Plus</span></label>
+      <label class="opt"><input type="radio" name="gpt_choice" value="Pro"><span>Pro</span></label>
+      <label class="opt"><input type="radio" name="gpt_choice" value="아직 결정하지 않음"><span>아직 결정하지 않음</span></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="qtitle">참고 — ChatGPT에 업무도구 연결하기</div>
+    <div class="glossbox">
+      지원되는 환경에서는 앞으로 이런 것도 가능해집니다.<br><br>
+      <b>Google 기반이라면</b> — Drive / Gmail / Calendar를 연결해두면, ChatGPT가 필요한 정보를 찾아서 참고할 수 있어요.<br>
+      <b>Microsoft 기반이라면</b> — OneDrive/SharePoint / Outlook 등을 연결해두면, 마찬가지로 ChatGPT가 필요한 정보를 찾아서 참고할 수 있어요.
+    </div>
+    <div class="whybox"><b>단, 반드시 알아두세요</b> — 연결 가능 여부와 기능 범위는 ChatGPT 플랜, 계정 종류, 지역, 조직 관리자 설정 등에 따라 달라질 수 있으므로 실제 세팅 시 다시 확인합니다.</div>
+    <div class="glossbox" style="margin-top:8px">지금 STEP 1에서는 이 연결을 강제하지 않습니다. STEP 4에서 &ldquo;저장소·메일·Calendar 연결 가능 여부 확인 → 필요한 것만 연결&rdquo;을 목표로 다시 다룰게요.</div>
+  </div>
+`});
+
+SECTIONS.push({id:7, title:'브라우저', html:`
+  <div class="field">
+    <div class="qtitle">현재 주로 쓰는 브라우저</div>
+    <div class="opts">${['Chrome','Edge','삼성 인터넷','기타'].map(o=>`<label class="opt"><input type="radio" name="browser_now" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+  <div class="comparegrid">
+    <div class="ccard"><h4 style="margin:0 0 8px">Chrome</h4>
+      <div class="row"><span class="k">동기화</span><span class="v">Galaxy·Windows 모두 Google 계정으로 즐겨찾기/비밀번호 동기화</span></div>
+      <div class="row"><span class="k">변경부담</span><span class="v">Chrome을 이미 쓰고 있다면 없음</span></div>
+    </div>
+    <div class="ccard"><h4 style="margin:0 0 8px">Edge</h4>
+      <div class="row"><span class="k">동기화</span><span class="v">Microsoft 365를 쓰신다면 계정이 이미 연결돼 있어 별도 로그인 부담 적음</span></div>
+      <div class="row"><span class="k">변경부담</span><span class="v">Windows에는 기본 탑재, Galaxy는 앱 설치 필요</span></div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="qtitle">선택</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="browser_choice" value="Chrome"><span>Chrome</span></label>
+      <label class="opt"><input type="radio" name="browser_choice" value="Edge"><span>Edge</span></label>
+      <label class="opt"><input type="radio" name="browser_choice" value="현재 브라우저 유지"><span>현재 브라우저 유지</span></label>
+    </div>
+  </div>
+`});
+
+SECTIONS.push({id:8, title:'보안 PDF 원칙', html:`
+  <div class="rulebox">
+    <span class="rulelabel">RULE</span>
+    <h3>보험사 원본 = 영구보관</h3>
+    <p>보험사 원본 PDF는 절대 덮어쓰지 않고 그대로 보관합니다. 마스킹이나 편집이 필요하면 별도의 &ldquo;작업본&rdquo;을 새로 만들어서 작업하고, 필요성이 끝나면 정리합니다. 원본과 작업본을 같은 파일로 착각하지 않는 게 핵심이에요.</p>
+    <ol>
+      <li>원본 PDF는 열람/인쇄 권한 범위에서만 사용</li>
+      <li>편집·마스킹이 필요하면 복사본을 만들어 작업</li>
+      <li>작업본에는 파일명에 &ldquo;_작업본&rdquo; 등으로 구분 표시</li>
+      <li>작업이 끝나면 작업본은 정리(삭제 또는 별도 보관)</li>
+    </ol>
+  </div>
+`});
+
+SECTIONS.push({id:9, title:'녹음 · 전사 습관 만들기', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 가장 걱정된다고 답하신 실수가 <b>고객 병력 메모 누락</b>이었어요. 이 섹션은 특정 앱을 정하는 게 아니라, 그 실수를 막기 위한 습관 하나를 확정하는 단계입니다.</div>
+
+  <div class="field">
+    <div class="qtitle">정확한 Galaxy Flip 모델명</div>
+    <input type="text" name="galaxy_model" placeholder="예: Galaxy Z Flip6">
+  </div>
+  <div class="field">
+    <div class="qtitle">One UI 버전</div>
+    <input type="text" name="oneui_version" placeholder="설정 > 휴대전화 정보 > 소프트웨어 정보에서 확인 가능">
+  </div>
+  <div class="glossbox">정확한 모델과 One UI 버전을 확인하기 전까지는 자동전사·자동저장 여부를 단정하지 않습니다. 기종·버전에 따라 지원되는 기능이 다르기 때문에, 위 두 가지가 확인되면 그에 맞는 정확한 안내를 다음 대화에서 이어드릴게요.</div>
+
+  <div class="rulebox">
+    <span class="rulelabel">RULE</span>
+    <h3>중요한 상담은 녹음에서 끝내지 않고 전사문까지 남긴다</h3>
+    <p>어떤 전사 도구를 쓸지는 다음 단계에서 몇 가지 직접 써보고 정하면 됩니다. 특정 도구를 지금 추천하지는 않습니다 — 여기서 확정하는 건 도구가 아니라 <b>&ldquo;중요한 상담은 녹음만으로 끝내지 않는다&rdquo;는 습관 자체</b>예요.</p>
+  </div>
+
+  <div class="whybox">
+    <b>왜 필요한가요?</b>
+    <ul style="margin:8px 0 0;padding-left:18px;line-height:1.7">
+      <li>음성 전체를 처음부터 다시 들을 필요가 줄어듭니다</li>
+      <li>병력·치료·약명·예산·고객요청 같은 내용을 검색으로 바로 찾을 수 있습니다</li>
+      <li>ChatGPT 등으로 분석이 가능해집니다</li>
+      <li>상담정보 누락을 막을 수 있습니다</li>
+      <li>다음 상담 질문을 만들어내는 데 활용할 수 있습니다</li>
+    </ul>
+  </div>
+
+  <div class="field">
+    <div class="qtitle">기록의 역할 구분</div>
+    <div class="glossbox">
+      <b>녹음파일</b> = 원본 기록 (있는 그대로 보관)<br>
+      <b>전사파일</b> = 검색·확인·AI 분석용 기록 (실제로 찾고 활용하는 용도)
+    </div>
+  </div>
+
+  <div class="dayblock" style="margin:0 0 14px">
+    <span class="dtime">상담 후 실제로 이렇게 이어집니다</span>
+    <div class="flow">상담 → Galaxy 녹음 → 전사 → 전사파일 저장 → GPT 분석(니즈·병력·치료력·예산·기존보험 불만·미확인사항·다음 질문) → &ldquo;보험프로그램 고객메모에 넣을 형태로 정리해줘&rdquo;</div>
+    <div class="aiExample"><span class="aitag">AI 결과 예시</span>상담일: 2026.08.30
+상담요약: ○○
+병력 확인: ○○
+추가서류: ○○
+다음 연락: ○○
+후속업무: ○○</div>
+    <div class="glossbox">전사문을 읽고 다시 CRM용으로 재작성하는 일을 줄이는 게 목표예요.</div>
+  </div>
+
+  <div class="glossbox"><b>전사 오류 주의</b> 병명, 약명, 날짜, 금액처럼 정확도가 중요한 정보는 전사 과정에서 잘못 옮겨질 가능성이 있습니다. 이런 항목은 필요할 때 원음을 다시 대조해서 확인하는 걸 원칙으로 합니다.</div>
+
+  <div class="field">
+    <div class="qtitle">이 습관, 언제부터 시작해볼까요?</div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="transcribe_start" value="오늘부터"><span>오늘부터</span></label>
+      <label class="opt"><input type="radio" name="transcribe_start" value="이번 주부터"><span>이번 주부터</span></label>
+      <label class="opt"><input type="radio" name="transcribe_start" value="천천히 검토"><span>천천히 검토</span></label>
+    </div>
+  </div>
+`});
+
+SECTIONS.push({id:10, title:'Calendar · Task · 고객기록 구분', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 세 가지를 하나로 뭉뚱그리면 나중에 찾기 어려워져요. 지금 미리 구분해두면 이후 자동화 단계(STEP 9~10)가 훨씬 수월합니다.</div>
+  <div class="field">
+    <div class="qtitle">Calendar</div>
+    <div class="glossbox">언제 만나거나 전화할 것인가 — 예: 9월 15일 14:00 김○○ 상담</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">Task</div>
+    <div class="glossbox">내가 무엇을 해야 하는가 — 예: 김○○ 진단서 확인</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">보험 고객기록</div>
+    <div class="glossbox">고객에게 무슨 일이 있었는가 — 예: 8월 30일 상담 / 진단서 추가 요청</div>
+  </div>
+  <div class="field">
+    <div class="qtitle">Task 관리는 무엇으로 하시겠어요?</div>
+    <div class="opts">${['기존 보험 프로그램 우선','현재 Calendar 사용','Microsoft To Do','Google Tasks','TickTick','추후 검토'].map(o=>`<label class="opt"><input type="radio" name="task_choice" value="${o}"><span>${o}</span></label>`).join('')}</div>
+  </div>
+  <div class="glossbox"><b>TickTick 참고 가격</b> 무료 플랜(리스트 9개, 리스트당 99개 작업 제한)이 있고, Premium은 연 $35.99(월 환산 약 $3, 기준일 ${TODAY} · ticktick.com) — 캘린더 뷰, 무제한 리스트, 반복 알림 등이 추가됩니다. 지금 있는 보험 프로그램에서 후속일정 관리가 이미 충분하다면 새 앱을 굳이 추가하지 않아도 됩니다.</div>
+`});
+
+SECTIONS.push({id:11, title:'신규 고객자료 RULE', html:`
+  <div class="whybox"><b>왜 필요한가요?</b> 지금 이 순간부터 새로 들어오는 자료에 바로 적용할 수 있는 규칙이에요. 과거 자료를 한꺼번에 정리하는 건 STEP 3에서 다룹니다.</div>
+  <div class="glossbox">흐름: 카카오톡/메일/보험사 → 공유 → 지정 저장소 → 고객폴더 → 표준 파일명 → 원본보관</div>
+  <div class="rulebox">
+    <span class="rulelabel">RULE</span>
+    <ol>
+      <li>보험사 원본은 반드시 보관</li>
+      <li>카톡/다운로드 폴더에 장기간 방치하지 않기</li>
+      <li>받은 날 또는 업무 종료 전 고객폴더로 이동</li>
+      <li>표준 파일명 사용</li>
+      <li>원본을 작업본으로 덮어쓰지 않기</li>
+      <li>고객 개인정보를 파일명에 과도하게 넣지 않기</li>
+    </ol>
+  </div>
+  <div class="field">
+    <div class="qtitle">파일명 규칙 (예시)</div>
+    <div class="glossbox mono" style="font-family:ui-monospace,Menlo,Consolas,monospace">피보험자(홍○○)_보험사_상품명_가입일(증권)_계약자(김○○).pdf</div>
+    <div class="glossbox">약관처럼 계약자와 무관한 문서는 계약자 표시를 생략할 수 있어요. 비밀번호 관리 방식은 별도로 확정하기 전까지는 과도하게 복잡한 시스템을 만들지 않습니다.</div>
+  </div>
+`});
+
+SECTIONS.push({id:12, title:'고객보험 분석 검증 RULE', html:`
+  <div class="dayblock" style="margin:0 0 14px">
+    <span class="dtime">오래된 보험, 실제로 이렇게 확인합니다</span>
+    <div class="flow">보험프로그램(보험사/상품명/가입일/특약 확인) → 보험사(가입 당시 공식 약관 다운로드) → 지정 저장소(고객폴더에 원본 보관) → GPT(증권+계약정보+당시 약관 대조) — &ldquo;실제 가입특약만 기준으로 지급조건 찾아줘&rdquo;</div>
+    <div class="glossbox">형님이 얻는 것 — 어느 약관인지 찾는 시간 감소 · 특약명 다시 찾는 시간 감소 · 약관 수백 페이지에서 해당 조항 찾는 시간 감소 · 확인할 부분이 좁혀짐.</div>
+  </div>
+  <div class="rulebox">
+    <span class="rulelabel">RULE · 반드시 강조</span>
+    <h3>고객보험은 AI가 추정해서 분석하지 않습니다</h3>
+    <p>순서: 보험사 → 정확한 상품명 → 가입일 → (가능하면) 상품코드 → 증권 → 계약정보 → 가입 당시 공식 약관 확보 → 실제 가입특약 확인 → 약관 조항 대조 → 분석</p>
+    <ul>
+      <li>상품명이 같다고 현재 약관을 과거 계약에 적용하지 않는다</li>
+      <li>약관에 담보가 존재한다고 실제 가입했다고 판단하지 않는다</li>
+      <li>증권에 실제 가입된 특약을 확인한다</li>
+      <li>계약정보와 교차검증한다</li>
+      <li>확인되지 않은 내용은 &ldquo;확인 필요&rdquo;로 표시한다</li>
+      <li>보험금 지급 여부 등 중요한 판단은 원문 근거를 확인한다</li>
+    </ul>
+    <p style="margin-top:10px;font-weight:700">AI는 최종 판단자가 아니라 <u>검색·정리·대조·누락확인 도구</u>로 사용합니다.</p>
+  </div>
+`});
+
+SECTIONS.push({id:13, title:'개인정보 보안 체크리스트', html:`
+  <div class="whybox"><b>왜 이 섹션이 필요한가요?</b> 지금까지 만든 시스템(자료 수집 → 저장 → AI 분석 → 녹음/전사 → CRM)은 결국 고객의 주민번호, 병력, 계약정보 같은 민감한 정보를 다루게 됩니다. 편의성만큼 보안 습관도 처음부터 같이 확정해두는 게 안전해요.</div>
+  <div class="rulebox">
+    <span class="rulelabel">RULE</span>
+    <ul>
+      <li>AI에 자료를 올리기 전, 이름·주민번호·연락처처럼 꼭 필요하지 않은 개인정보는 먼저 마스킹(가리기)</li>
+      <li>고객자료 파일명에 주민번호·전화번호 등 민감정보를 그대로 넣지 않기</li>
+      <li>녹음·전사 파일도 &ldquo;개인정보를 포함한 자료&rdquo;로 취급 — 여러 메신저·메모앱에 흩어두지 말고 기준 저장소 한 곳에만 보관</li>
+      <li>공유링크를 만들 때는 &ldquo;링크가 있는 모든 사람&rdquo;이 아니라 &ldquo;특정 인원&rdquo;으로 권한을 좁히기</li>
+      <li>카카오톡은 &ldquo;전달용&rdquo;으로만 쓰고 &ldquo;보관용&rdquo;으로 쓰지 않기 — 대화가 밀리면 못 찾고, 상대방 기기에도 그대로 남습니다</li>
+      <li>오래된 고객자료를 정리할 때도 실수로 원본을 지우지 않도록 주의 (원본 보존 원칙과 연결)</li>
+      <li>ChatGPT/Claude 등에 올린 대화 기록도 주기적으로 점검하고, 더 이상 필요 없어진 고객 관련 대화는 삭제를 고려</li>
+    </ul>
+  </div>
+`});
+
+SECTIONS.push({id:14, title:'STEP 1 요약 확인', html:`
+  <div class="secDesc">아래 내용을 확인해주세요. 다 확인하셨으면 <b>&ldquo;STEP 1 작성 완료&rdquo;</b>를 눌러주세요 — 답변을 바탕으로 지금부터 뭘 하시면 되는지 친절하게 정리해드릴게요.</div>
+  <div class="resultBox mono" id="result"></div>
+  <div class="actions">
+    <button type="button" class="btn secondary" onclick="makeResult()">요약 새로고침</button>
+    <button type="button" class="btn secondary" onclick="copyResult()">결과 복사</button>
+  </div>
+
+  <button type="button" class="startbtn" style="margin-top:16px" onclick="finishStep1()">✅ STEP 1 작성 완료</button>
+
+  <div id="nextActionsWrap" style="display:none">
+    <div class="dayblock" style="margin-top:16px">
+      <span class="dtime">나의 후조치</span>
+      <div id="nextActions" class="glossbox" style="margin-top:10px"></div>
+    </div>
+
+    <div class="kakao-card" style="margin-top:16px;padding:18px 16px;border-radius:16px;background:#FFFCEB;border:1.5px solid #F1DC7A">
+      <div style="font-weight:800;font-size:16px;margin-bottom:6px;color:#3A2E00">STEP 1 결과를 혜란님께 공유할까요?</div>
+      <div style="font-size:13px;line-height:1.6;color:#6b6136;margin-bottom:14px">버튼을 누르면 위 요약이 복사되고, 카카오톡 앱 열기를 시도합니다. 앱이 자동으로 안 열리면 카카오톡을 직접 열어 붙여넣어 보내주세요.</div>
+      <button type="button" style="width:100%;background:#FEE500;color:#191919;border:0;border-radius:14px;padding:17px 16px;font-size:16px;font-weight:800;cursor:pointer" onclick="shareToHyeran()">💬 혜란에게 공유하기</button>
+    </div>
+  </div>
+
+  <div class="roadmap" style="margin-top:22px;padding:0">
+    <div class="roadmap-title" style="color:var(--muted)">다음 단계 로드맵</div>
+    <div class="roadmap-strip">${ROADMAP.slice(1).map(r=>`<div class="rchip" style="background:#EEF1FA;border-color:var(--line);color:var(--navy)">${r[0]} ${r[1]}</div>`).join('')}</div>
+  </div>
+`});
+
+const TOTAL_STEPS = SECTIONS.length;
+document.getElementById('totalStepsLabel').textContent = TOTAL_STEPS;
+
+/* ---------- 렌더링 ---------- */
+function sectionWrap(sec){
+  return `<section class="step-section" data-step="${sec.id}">
+    <div class="card">
+      <div class="cardHead"><span class="stepTag mono">${String(sec.id).padStart(2,'0')}</span><h2 class="secTitle">${sec.title}</h2></div>
+      ${sec.html}
+    </div>
+  </section>`;
+}
+document.getElementById('stepsContainer').innerHTML = SECTIONS.map(sectionWrap).join('');
+
+const chipnav = document.getElementById('chipnav');
+chipnav.innerHTML = SECTIONS.map(s=>`<div class="chip mono" data-step="${s.id}" onclick="goStep(${s.id})">${String(s.id).padStart(2,'0')}</div>`).join('');
+
+let currentStep = 1;
+const secTitleMap = {}; SECTIONS.forEach(s=>secTitleMap[s.id]=s.title);
+
+function goStep(n){
+  if(n<1)n=1; if(n>TOTAL_STEPS)n=TOTAL_STEPS;
+  currentStep = n;
+  document.querySelectorAll('.step-section').forEach(el=>el.classList.toggle('active', Number(el.dataset.step)===n));
+  document.querySelectorAll('.chip').forEach(el=>el.classList.toggle('active', Number(el.dataset.step)===n));
+  document.getElementById('stepNumLabel').textContent = String(n).padStart(2,'0');
+  document.getElementById('secNameLabel').textContent = secTitleMap[n]||'';
+  document.getElementById('progressFill').style.width = (n/TOTAL_STEPS*100)+'%';
+  document.getElementById('prevBtn').disabled = (n===1);
+  const nextBtn = document.getElementById('nextBtn');
+  if(n===TOTAL_STEPS){ nextBtn.style.display='none'; } else { nextBtn.style.display='block'; nextBtn.textContent = n===TOTAL_STEPS-1 ? '요약 보기 →' : '다음'; }
+  if(n===TOTAL_STEPS){ makeResult(); }
+  const chip = chipnav.querySelector(`.chip[data-step="${n}"]`);
+  if(chip) chip.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+const formEl = document.getElementById('f');
+formEl.addEventListener('change', function(e){
+  const t = e.target;
+  if(t.matches('input[type="radio"], input[type="checkbox"]')){
+    document.querySelectorAll(`input[name="${t.name}"]`).forEach(el=>{
+      const lbl = el.closest('.opt'); if(lbl) lbl.classList.toggle('sel', el.checked);
+    });
+  }
+  if(t.dataset && t.dataset.guideToggle){
+    const g = document.getElementById('guide_'+t.dataset.guideToggle);
+    if(g) g.style.display = t.checked ? 'block' : 'none';
+  }
+  if(t.matches('input[type="radio"]') && t.dataset && !t.dataset.guideToggle){
+    // 같은 name의 "할 수 있어요" 선택 시 가이드 숨김
+    const guideEl = document.querySelector(`input[name="${t.name}"][data-guide-toggle]`);
+    if(guideEl && !t.dataset.guideToggle){
+      const g = document.getElementById('guide_'+guideEl.dataset.guideToggle);
+      if(g) g.style.display = 'none';
+    }
+  }
+});
+
+function one(name){const x=document.querySelector('[name="'+name+'"]:checked');return x?x.value:'미응답'}
+function vals(name){return [...document.querySelectorAll('[name="'+name+'"]:checked')].map(x=>x.value)}
+function text(name){const x=document.querySelector('[name="'+name+'"]');return x&&x.value.trim()?x.value.trim():'미응답'}
+function list(v){return v.length?v.join(', '):'미응답'}
+
+function makeResult(){
+  const gx = ['gx1','gx2','gx3','gx4','gx5','gx6','gx7','gx8'];
+  const gxLabels = ['사진 여러장 선택','PDF 공유','저장소로 저장','다운로드 파일 찾기','파일명 변경','기기간 전송','통화녹음 찾기','녹음파일 공유'];
+  const gxLine = gx.map((k,i)=>`${gxLabels[i]}: ${one(k)}`).join(' / ');
+
+  const out = `보험업무 AI START GUIDE — STEP 1 확정 요약
+
+[Galaxy 기본기]
+${gxLine}
+갤럭시 모델: ${text('galaxy_model')} / One UI 버전: ${text('oneui_version')}
+
+[보험 프로그램]
+파일 제공 형태: ${one('prog_filetype')}
+통합조회 프로그램: ${text('prog_integrated')} (${list(vals('prog_integrated_feat'))})
+신규설계 프로그램: ${text('prog_design')} (${list(vals('prog_design_feat'))})
+파일 입출력: ${list(vals('prog_io'))}
+
+[업무 기반]
+Google vs Microsoft: ${one('ecosystem')}
+기준 저장소: ${one('storage_base')}
+
+[PDF]
+필요 기능: ${list(vals('pdf_need'))}
+선택 프로그램: ${one('pdf_choice')}
+
+[ChatGPT]
+선택 요금제: ${one('gpt_choice')}
+
+[브라우저]
+현재: ${one('browser_now')} → 선택: ${one('browser_choice')}
+
+[녹음·전사 습관]
+전사파일 저장 습관 시작 시점: ${one('transcribe_start')}
+※ RULE: 녹음 직후 전사(텍스트 변환) 파일을 저장 — 검색 가능 / 안전한 장기보관 / 병력메모 누락 방지
+
+[Task 관리]
+선택: ${one('task_choice')}
+
+[확정 RULE]
+① 보험사 원본 = 영구보관, 작업본은 별도 생성
+② 신규 고객자료: 카톡/메일/보험사 → 지정저장소 → 고객폴더 → 표준파일명 → 원본보관
+③ 고객보험 분석: AI는 추정하지 않고 원문(약관·증권·계약정보) 대조 후에만 분석, 확인 안 된 내용은 "확인 필요"로 표시
+④ 개인정보: 업로드 전 마스킹, 파일명에 민감정보 미포함, 기준저장소 1곳 보관, 카톡은 전달용으로만 사용
+
+[다음 단계]
+STEP 2 신규 고객자료 RULE 적용 → STEP 3 기존 자료 통합 → STEP 4 ChatGPT 프로젝트 세팅 ...`;
+  document.getElementById('result').textContent = out;
+}
+
+async function copyText(str){
+  try{ await navigator.clipboard.writeText(str); return true; }
+  catch(e){
+    try{
+      const ta=document.createElement('textarea'); ta.value=str; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); return true;
+    }catch(e2){ return false; }
+  }
+}
+async function copyResult(){ makeResult(); await copyText(document.getElementById('result').textContent); }
+
+/* ---------- 나의 후조치 · 완료 · 공유 ---------- */
+function makeNextActions(){
+  const lines = [];
+
+  if(one('ecosystem')==='미응답' || one('ecosystem')==='아직 결정하지 않음'){
+    lines.push('업무 기반(Google/Microsoft)은 아직 정하지 않으셨어요 — 급한 건 아니니 편하실 때 1~2일 안에 정해두시면 다음 단계가 수월해요.');
+  } else {
+    lines.push(`업무 기반은 <b>${one('ecosystem')}</b>으로 정하셨어요. 아직 가입 전이시면, 편하신 시점에 가입만 해두시면 됩니다.`);
+  }
+
+  if(one('pdf_choice')!=='미응답' && one('pdf_choice')!=='아직 결정하지 않음'){
+    lines.push(`PDF는 <b>${one('pdf_choice')}</b>로 정하셨어요. 지금 당장 결제하지 않으셔도 괜찮고, 구약관을 실제로 다뤄야 할 때 구독하셔도 늦지 않아요.`);
+  }
+
+  if(one('gpt_choice')!=='미응답' && one('gpt_choice')!=='아직 결정하지 않음'){
+    lines.push(`ChatGPT는 <b>${one('gpt_choice')}</b>로 정하셨어요.`);
+  }
+
+  const model = text('galaxy_model'), oneui = text('oneui_version');
+  if(model==='미응답' || oneui==='미응답'){
+    lines.push('갤럭시 모델명과 One UI 버전 확인이 아직 안 됐어요 — 설정 &gt; 휴대전화 정보 &gt; 소프트웨어 정보에서 확인하셔서 다음 대화에 알려주시면, 그에 맞는 정확한 자동저장·전사 안내를 드릴게요.');
+  } else {
+    lines.push(`${model} / One UI ${oneui} 확인해주셔서 감사해요 — 다음 대화에서 이 기종에 맞는 안내를 이어드릴게요.`);
+  }
+
+  const ts = one('transcribe_start');
+  if(ts==='오늘부터') lines.push('전사파일 저장 습관을 오늘부터 시작하기로 하셨네요 — 오늘 상담부터 바로 적용해보세요.');
+  else if(ts==='이번 주부터') lines.push('전사파일 저장 습관은 이번 주부터 시작하기로 하셨어요 — 편하신 상담 때부터 천천히 시작하시면 됩니다.');
+  else if(ts==='천천히 검토') lines.push('전사파일 저장 습관은 천천히 검토하기로 하셨어요 — 마음의 준비가 되시면 언제든 시작하시면 돼요, 서두르지 않으셔도 됩니다.');
+
+  lines.push('여기까지가 STEP 1이에요. 오늘 다 못 정하신 항목이 있어도 전혀 문제없습니다 — 위 요약을 저장해두셨다가, 다음에 대화를 이어가시면서 STEP 2(신규 고객자료 RULE 적용)로 편하게 넘어가시면 돼요.');
+
+  return lines.map(l=>'· '+l).join('<br><br>');
+}
+
+function finishStep1(){
+  makeResult();
+  document.getElementById('nextActions').innerHTML = makeNextActions();
+  document.getElementById('nextActionsWrap').style.display = 'block';
+  document.getElementById('nextActionsWrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function shareToHyeran(){
+  makeResult();
+  await copyText(document.getElementById('result').textContent);
+  setTimeout(()=>{ location.href = 'kakaotalk://'; }, 200);
+}
+
+/* 시작은 startGuide()에서 goStep(1) 호출 */
+</script>
+</body>
+</html>
